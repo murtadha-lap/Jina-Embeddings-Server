@@ -1,39 +1,12 @@
 import os
 import secrets
-import sys
-import types
 import logging
-from importlib.machinery import ModuleSpec
 
 import torch
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
-
-
-def disable_torchcodec_for_text_embeddings() -> None:
-    decoders = types.ModuleType("torchcodec.decoders")
-
-    class AudioDecoder:
-        pass
-
-    class VideoDecoder:
-        pass
-
-    decoders.AudioDecoder = AudioDecoder
-    decoders.VideoDecoder = VideoDecoder
-
-    torchcodec = types.ModuleType("torchcodec")
-    torchcodec.decoders = decoders
-    torchcodec.__spec__ = ModuleSpec("torchcodec", loader=None)
-    decoders.__spec__ = ModuleSpec("torchcodec.decoders", loader=None)
-
-    sys.modules["torchcodec"] = torchcodec
-    sys.modules["torchcodec.decoders"] = decoders
-
-
-disable_torchcodec_for_text_embeddings()
 
 from sentence_transformers import SentenceTransformer
 
